@@ -16,4 +16,28 @@ const pool = mysql
 
 // promise () helps to have a Async code all time in controllers
 
+export async function getNotes() {
+      const [rows] = await pool.query('SELECT * FROM notes');
+      return rows;
+}
+
+export async function getNote(id) {
+      const [rows] = await pool.query(`SELECT * FROM notes WHERE id = ?`, [id]);
+      return rows[0];
+}
+
+export async function createNote(title, contents) {
+      const [result] = await pool.query(
+            `INSERT INTO notes (title, contents) VALUES (?, ?)`,
+            [title, contents]
+      );
+      const id = result.insertId;
+      return getNote(id);
+}
+
+export async function deleteNoteById(id) {
+      const [result] = await pool.query('DELETE FROM notes WHERE id = ?', [id]);
+      return result.affectedRows > 0;
+}
+
 module.exports = pool;
